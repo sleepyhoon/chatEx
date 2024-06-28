@@ -2,6 +2,8 @@ package hello.chatex.chatDto;
 
 import lombok.Getter;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.UUID;
 
 /**
@@ -26,7 +28,11 @@ import java.util.UUID;
  * </pre>
  */
 @Getter
-public class ChatRoom {
+public class ChatRoom implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 768234975743593L;
+
     private String roomId;
     private String name;
 
