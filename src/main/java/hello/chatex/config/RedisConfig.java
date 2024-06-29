@@ -1,10 +1,16 @@
 package hello.chatex.config;
 
+import hello.chatex.chatDto.ChatMessage;
+import hello.chatex.pubsub.RedisSubscriber;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
+import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
@@ -31,6 +37,8 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
  */
 @Configuration
 public class RedisConfig {
+
+    private RedisSubscriber redisSubscriber;
     /**
      * redis pub/sub 메세지를 처리하는 listener 설정
      */
@@ -40,7 +48,6 @@ public class RedisConfig {
         container.setConnectionFactory(connectionFactory);
         return container;
     }
-
     /**
      * 어플리케이션에서 사용할 redisTemplate 설정
      */
@@ -49,8 +56,12 @@ public class RedisConfig {
         RedisTemplate<String, Object> template = new RedisTemplate<>();
         template.setConnectionFactory(connectionFactory);
         template.setKeySerializer(new StringRedisSerializer());
-        template.setValueSerializer(new Jackson2JsonRedisSerializer<>(String.class));
+        template.setValueSerializer(new Jackson2JsonRedisSerializer<>(ChatMessage.class));
         return template;
+    }
 
+    @Bean
+    public RedisConnectionFactory redisConnectionFactory() {
+        return new LettuceConnectionFactory();
     }
 }

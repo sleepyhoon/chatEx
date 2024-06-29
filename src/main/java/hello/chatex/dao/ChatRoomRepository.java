@@ -68,6 +68,10 @@ public class ChatRoomRepository {
     public ChatRoom createChatRoom(String name) {
         ChatRoom room = ChatRoom.create(name);
         opsHashChatRoom.put(CHAT_ROOMS, room.getRoomId() , room);
+        // 새로운 채팅방을 생성할 때 ChannelTopic을 추가합니다.
+        ChannelTopic topic = new ChannelTopic(room.getRoomId());
+        redisMessageListener.addMessageListener(redisSubscriber, topic);
+        topics.put(room.getRoomId(), topic);
         return room;
     }
 

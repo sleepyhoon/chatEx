@@ -4,7 +4,6 @@
     <title>Websocket Chat</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <!-- CSS -->
     <link rel="stylesheet" href="/webjars/bootstrap/4.3.1/dist/css/bootstrap.min.css">
     <style>
         [v-cloak] {
@@ -34,7 +33,6 @@
         </li>
     </ul>
 </div>
-<!-- JavaScript -->
 <script src="/webjars/vue/2.5.16/dist/vue.min.js"></script>
 <script src="/webjars/axios/0.17.1/dist/axios.min.js"></script>
 <script>
@@ -42,8 +40,7 @@
         el: '#app',
         data: {
             room_name : '',
-            chatrooms: [
-            ]
+            chatrooms: []
         },
         created() {
             this.findAllRoom();
@@ -53,29 +50,28 @@
                 axios.get('/chat/rooms').then(response => { this.chatrooms = response.data; });
             },
             createRoom: function() {
-                if("" === this.room_name) {
+                if ("" === this.room_name) {
                     alert("방 제목을 입력해 주십시요.");
-
                 } else {
                     const params = new URLSearchParams();
-                    params.append("name",this.room_name);
+                    params.append("name", this.room_name);
                     axios.post('/chat/room', params)
-                        .then(
-                            response => {
-                                alert(response.data.name+"방 개설에 성공하였습니다.")
-                                this.room_name = '';
-                                this.findAllRoom();
-                            }
-                        )
-                        .catch( response => { alert("채팅방 개설에 실패하였습니다."); } );
+                        .then(response => {
+                            alert(response.data.name + " 방 개설에 성공하였습니다.");
+                            this.room_name = '';
+                            this.findAllRoom();
+                        })
+                        .catch(response => {
+                            alert("채팅방 개설에 실패하였습니다.");
+                        });
                 }
             },
             enterRoom: function(roomId) {
                 const sender = prompt('유저 이름을 입력해 주세요.');
-                if(sender !== "") {
-                    localStorage.setItem('chart.sender',sender);
-                    localStorage.setItem('chart.roomId',roomId);
-                    location.href="/chat/room/enter/"+roomId;
+                if (sender !== "") {
+                    localStorage.setItem('chat.sender', sender);
+                    localStorage.setItem('chat.roomId', roomId);
+                    location.href = "/chat/room/enter/" + roomId;
                 }
             }
         }
