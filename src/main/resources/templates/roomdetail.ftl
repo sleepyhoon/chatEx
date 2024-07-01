@@ -41,7 +41,6 @@
 <script src="/webjars/sockjs-client/1.1.2/sockjs.min.js"></script>
 <script src="/webjars/stomp-websocket/2.3.3-1/stomp.min.js"></script>
 <script>
-    //alert(document.title);
     // websocket & stomp initialize
     let sock = new SockJS("/ws-stomp");
     let ws = Stomp.over(sock);
@@ -60,6 +59,7 @@
             this.roomId = localStorage.getItem('chat.roomId');
             this.sender = localStorage.getItem('chat.sender');
             this.findRoom();
+            this.loadMessages();
         },
         methods: {
             findRoom: function () {
@@ -81,7 +81,12 @@
                     "type": recv.type,
                     "sender": recv.type === 'ENTER' ? '[알림]' : recv.sender,
                     "message": recv.message
-                })
+                });
+            },
+            loadMessages: function () {
+                axios.get('/chat/messages/' + this.roomId).then(response => {
+                    this.messages = response.data.reverse();
+                });
             }
         }
     });
