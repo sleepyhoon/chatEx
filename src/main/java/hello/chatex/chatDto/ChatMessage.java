@@ -3,6 +3,8 @@ package hello.chatex.chatDto;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
+
 /**
  * <br>package name   : hello.chatex.chatDto
  * <br>file name      : chatMessage
@@ -28,10 +30,10 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class ChatMessage {
-    // 메세지 타입 : 입장, 채팅
+public class ChatMessage implements Serializable {
+    // 메세지 타입 : 새로 운 유저 입장, 기존의 유저 입장, 채팅
     public enum MessageType {
-        ENTER, TALK
+        ENTER, JOIN, TALK
     }
     private MessageType type; // 메세지 타입
 
