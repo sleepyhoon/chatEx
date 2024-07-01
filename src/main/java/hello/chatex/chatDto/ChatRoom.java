@@ -1,10 +1,10 @@
 package hello.chatex.chatDto;
 
+import lombok.Builder;
 import lombok.Getter;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.UUID;
 
 /**
  * <br>package name   : hello.chatex.chatDto
@@ -28,6 +28,7 @@ import java.util.UUID;
  * </pre>
  */
 @Getter
+@Builder
 public class ChatRoom implements Serializable {
 
     @Serial
@@ -35,12 +36,5 @@ public class ChatRoom implements Serializable {
 
     private String roomId;
     private String name;
-
-    public static ChatRoom create(String name) {
-        ChatRoom room = new ChatRoom();
-        room.roomId = UUID.randomUUID().toString();
-        room.name = name;
-        return room;
-    }
 
 }

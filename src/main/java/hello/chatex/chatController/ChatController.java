@@ -4,6 +4,7 @@ import hello.chatex.chatDto.ChatMessage;
 import hello.chatex.chatDto.ChatRoom;
 import hello.chatex.dao.ChatRoomRepository;
 import hello.chatex.pubsub.RedisPublisher;
+import hello.chatex.service.ChatRoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -38,7 +39,7 @@ import java.util.List;
 @Controller
 public class ChatController {
     private final RedisPublisher redisPublisher;
-    private final ChatRoomRepository chatRoomRepository;
+    private final ChatRoomService chatRoomService;
 
     /**
      * websocket "/pub/chat/message"로 들어오는 메세지를 처리한다.
@@ -46,11 +47,11 @@ public class ChatController {
     @MessageMapping("/chat/message")
     public void message(ChatMessage chatMessage) {
         if(ChatMessage.MessageType.ENTER.equals(chatMessage.getType())) {
-            chatRoomRepository.enterChatRoom(chatMessage.getRoomId());
+            chatRoomService.enterChatRoom(chatMessage.getRoomId());
             chatMessage.setMessage(chatMessage.getSender()+"님이 입장하셨습니다.");
         }
         // Websocket에 발행된 메세지를 redis로 발행한다.
-        redisPublisher.publish(chatRoomRepository.getTopic(chatMessage.getRoomId()),chatMessage);
+        redisPublisher.publish(chatRoomService.getTopic(chatMessage.getRoomId()),chatMessage);
     }
 
 }
