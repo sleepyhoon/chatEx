@@ -62,6 +62,7 @@ public class ChatRoomServiceImpl implements ChatRoomService{
         }
     }
 
+    // 이 코드는 사실 어디에 위치해야 할지 잘 모르겠음.
     public ChannelTopic getTopic(String roomId) {
         return topics.get(roomId);
     }
