@@ -46,13 +46,16 @@ public class ChatMessageController {
      */
     @MessageMapping("/chat/message")
     public void message(ChatMessage chatMessage) {
+        // 처음 입장 했을 경우
         if(ChatMessage.MessageType.ENTER.equals(chatMessage.getType())) {
             chatRoomService.enterChatRoom(chatMessage.getRoomId());
             chatMessage.setMessage(chatMessage.getSender()+"님이 입장하셨습니다.");
         }
+        // 채팅을 입력하는 경우 메세지를 redis에 저장해야함.
         if(ChatMessage.MessageType.TALK.equals(chatMessage.getType())) {
             chatMessageService.saveChatMessage(chatMessage);
         }
+        // 기존 유저가 입장하는 경우(Join), 아무것도 출력하지않음.
         // Websocket에 발행된 메세지를 redis로 발행한다.
         redisPublisher.publish(chatRoomService.getTopic(chatMessage.getRoomId()),chatMessage);
     }
