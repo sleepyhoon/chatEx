@@ -1,16 +1,15 @@
 package hello.chatex.dao;
 
 import hello.chatex.chatDto.ChatRoom;
-import hello.chatex.pubsub.RedisSubscriber;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.listener.ChannelTopic;
-import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
+
+import static hello.chatex.constants.Const.CHAT_ROOMS;
 
 /**
  * <br>package name   : hello.chatex.dao
@@ -36,7 +35,6 @@ import java.util.*;
 @RequiredArgsConstructor
 @Repository
 public class ChatRoomRepository {
-    private static final String CHAT_ROOMS = "CHAT_ROOM";
     private final RedisTemplate<String,Object> redisTemplate;
     private HashOperations<String,String,ChatRoom> opsHashChatRoom;
 
@@ -60,6 +58,7 @@ public class ChatRoomRepository {
         ChatRoom room = ChatRoom.builder()
                 .name(name)
                 .roomId(UUID.randomUUID().toString())
+                .messages(new ArrayList<>())
                 .build();
         //redis에 저장하기.
         opsHashChatRoom.put(CHAT_ROOMS, room.getRoomId() , room);

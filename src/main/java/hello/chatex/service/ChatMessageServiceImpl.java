@@ -44,6 +44,6 @@ public class ChatMessageServiceImpl implements ChatMessageService {
     @Override
     @Transactional(readOnly = true)
     public List<ChatMessage> getChatMessages(String roomId) {
-        return chatMessageRepository.findMessagesByRoomId(roomId);
+        return chatMessageRepository.getMessagesFromChatRoom(roomId);
     }
 }

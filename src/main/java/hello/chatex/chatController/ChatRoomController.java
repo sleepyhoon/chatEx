@@ -1,7 +1,10 @@
 package hello.chatex.chatController;
 
+import hello.chatex.chatDto.ChatMessage;
 import hello.chatex.chatDto.ChatRoom;
 import hello.chatex.dao.ChatRoomRepository;
+import hello.chatex.service.ChatMessageService;
+import hello.chatex.service.ChatRoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -35,7 +38,7 @@ import java.util.List;
 @RequestMapping("/chat")
 public class ChatRoomController {
     private final ChatRoomRepository chatRoomRepository;
-
+    private final ChatMessageService chatMessageService;
     // 채팅방 리스트 화면
     @GetMapping("/room")
     public String rooms(Model model) {
