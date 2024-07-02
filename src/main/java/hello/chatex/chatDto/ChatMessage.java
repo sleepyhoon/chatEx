@@ -42,4 +42,6 @@ public class ChatMessage implements Serializable {
     private String roomId; // 채팅방 id
 
     private String sender; // 송신자
+
+    private long timestamp; // 메세지 작성 시간
 }
