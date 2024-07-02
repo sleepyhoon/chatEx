@@ -6,10 +6,12 @@ import hello.chatex.pubsub.RedisPublisher;
 import hello.chatex.service.ChatMessageService;
 import hello.chatex.service.ChatRoomService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
 
@@ -36,11 +38,11 @@ import java.util.List;
  */
 @RequiredArgsConstructor
 @Controller
+@Slf4j
 public class ChatMessageController {
     private final RedisPublisher redisPublisher;
     private final ChatRoomService chatRoomService;
     private final ChatMessageService chatMessageService;
-    private final ChatMessageRepository chatMessageRepository;
     /**
      * websocket "/pub/chat/message"로 들어오는 메세지를 처리한다.
      */
@@ -60,8 +62,12 @@ public class ChatMessageController {
         redisPublisher.publish(chatRoomService.getTopic(chatMessage.getRoomId()),chatMessage);
     }
 
+    /**
+     * 특정 채팅방의 모든 메시지를 조회한다.
+     */
     @GetMapping("/chat/messages/{roomId}")
+    @ResponseBody
     public List<ChatMessage> getMessages(@PathVariable String roomId) {
-        return chatMessageRepository.findMessagesByRoomId(roomId);
+        return chatMessageService.getChatMessages(roomId);
     }
 }
