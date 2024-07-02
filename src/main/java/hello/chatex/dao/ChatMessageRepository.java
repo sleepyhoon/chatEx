@@ -1,15 +1,14 @@
 package hello.chatex.dao;
 
 import hello.chatex.chatDto.ChatMessage;
-import hello.chatex.chatDto.ChatRoom;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.HashOperations;
-import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -52,11 +51,14 @@ public class ChatMessageRepository {
         chatMessageListOps.put(key, messageId, chatMessage);
     }
 
-    public List<ChatMessage> findMessagesByRoomId(String roomId) {
+    public List<ChatMessage> getMessagesFromChatRoom(String roomId) {
         // roomId를 기반으로 해당 채팅방의 모든 메시지를 조회
         String key = "CHAT_ROOM_" + roomId;
         Map<String, ChatMessage> messages = chatMessageListOps.entries(key);
-        return new ArrayList<>(messages.values());
+        List<ChatMessage> messageList = new ArrayList<>(messages.values());
+        // timestamp 순으로 정렬하기
+        messageList.sort(Comparator.comparingLong(ChatMessage::getTimestamp));
+        return messageList;
     }
 
     private String generateMessageId(ChatMessage chatMessage) {
