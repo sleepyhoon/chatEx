@@ -17,7 +17,7 @@
 <body>
 <div class="container" id="app" v-cloak>
     <div>
-        <h2>{{room.name}}</h2>
+        <h2>{{ room.name }}</h2>
     </div>
     <div class="input-group">
         <div class="input-group-prepend">
@@ -29,8 +29,8 @@
         </div>
     </div>
     <ul class="list-group">
-        <li class="list-group-item" v-for="message in messages">
-            {{message.sender}} - {{message.message}}</a>
+        <li class="list-group-item" v-for="msg in messages">
+            {{ msg.sender }} - {{ msg.message }}
         </li>
     </ul>
     <div></div>
@@ -72,7 +72,8 @@
                     type: 'TALK',
                     roomId: this.roomId,
                     sender: this.sender,
-                    message: this.message
+                    message: this.message,
+                    timestamp: Date.now() // 현재 시간을 저장
                 }));
                 this.message = '';
             },
@@ -94,19 +95,19 @@
     function connect() {
         // pub/sub event
         ws.connect({}, function(frame) {
-            ws.subscribe("/sub/chat/room/"+vm.$data.roomId, function(message) {
+            ws.subscribe("/sub/chat/room/" + vm.$data.roomId, function(message) {
                 const recv = JSON.parse(message.body);
                 vm.recvMessage(recv);
             });
             ws.send("/pub/chat/message", {}, JSON.stringify({type:'ENTER', roomId:vm.$data.roomId, sender:vm.$data.sender}));
         }, function(error) {
-            if(reconnect++ <= 5) {
+            if (reconnect++ <= 5) {
                 setTimeout(function() {
                     console.log("connection reconnect");
                     sock = new SockJS("/ws-stomp");
                     ws = Stomp.over(sock);
                     connect();
-                },10*1000);
+                }, 10 * 1000);
             }
         });
     }
