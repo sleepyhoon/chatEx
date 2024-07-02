@@ -2,9 +2,12 @@ package hello.chatex.chatDto;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * <br>package name   : hello.chatex.chatDto
@@ -32,9 +35,11 @@ import java.io.Serializable;
 public class ChatRoom implements Serializable {
 
     @Serial
-    private static final long serialVersionUID = 768234975743593L;
+    private static final long serialVersionUID = 123456789L;
 
     private String roomId;
     private String name;
 
+    // 채팅 메시지 리스트 추가
+    private ArrayList<ChatMessage> messages;
 }
