@@ -1,10 +1,11 @@
-package hello.chatex.chatController;
+package hello.chatex.chatmanagement.chatController;
 
-import hello.chatex.chatDto.ChatMessage;
-import hello.chatex.chatDto.ChatRoom;
-import hello.chatex.dao.ChatRoomRepository;
-import hello.chatex.service.ChatMessageService;
-import hello.chatex.service.ChatRoomService;
+import hello.chatex.chatmanagement.chatDto.ChatRoom;
+import hello.chatex.chatmanagement.dao.ChatRoomRepository;
+import hello.chatex.chatmanagement.service.ChatMessageService;
+import hello.chatex.chatmanagement.service.ChatRoomService;
+import hello.chatex.usermanagement.domain.User;
+import hello.chatex.usermanagement.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -38,7 +39,8 @@ import java.util.List;
 @RequestMapping("/chat")
 public class ChatRoomController {
     private final ChatRoomRepository chatRoomRepository;
-    private final ChatMessageService chatMessageService;
+
+    private final UserService userService;
     // 채팅방 리스트 화면
     @GetMapping("/room")
     public String rooms(Model model) {
@@ -71,5 +73,13 @@ public class ChatRoomController {
     @ResponseBody
     public ChatRoom roomInfo(@PathVariable String roomId) {
         return chatRoomRepository.findRoomById(roomId);
+    }
+
+
+    // 특정 채팅방에 있는 유저들 조회
+    @GetMapping("/room/{roomId}/users")
+    @ResponseBody
+    public List<User> getUsersInRoom(@PathVariable String roomId) {
+        return userService.getUsersInRoom(roomId);
     }
 }
