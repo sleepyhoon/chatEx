@@ -1,9 +1,10 @@
-package hello.chatex.dao;
+package hello.chatex.chatmanagement.dao;
 
-import hello.chatex.chatDto.ChatMessage;
+import hello.chatex.chatmanagement.chatDto.ChatMessage;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.HashOperations;
+import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -11,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * <br>package name   : hello.chatex.dao
@@ -37,28 +39,33 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ChatMessageRepository {
     private final RedisTemplate<String, Object> redisTemplate;
-    private HashOperations<String,String, ChatMessage> chatMessageListOps;
+    private ListOperations<String,Object> chatMessageList;
 
     @PostConstruct
     public void init() {
-        chatMessageListOps = redisTemplate.opsForHash();
+        chatMessageList = redisTemplate.opsForList();
     }
 
     public void saveMessage(ChatMessage chatMessage) {
         // roomId를 기반으로 메시지를 고유하게 저장
         String key = "CHAT_ROOM_" + chatMessage.getRoomId();
-        String messageId = generateMessageId(chatMessage);
-        chatMessageListOps.put(key, messageId, chatMessage);
+        chatMessageList.rightPush(key,chatMessage);
     }
 
     public List<ChatMessage> getMessagesFromChatRoom(String roomId) {
         // roomId를 기반으로 해당 채팅방의 모든 메시지를 조회
         String key = "CHAT_ROOM_" + roomId;
-        Map<String, ChatMessage> messages = chatMessageListOps.entries(key);
-        List<ChatMessage> messageList = new ArrayList<>(messages.values());
-        // timestamp 순으로 정렬하기
-        messageList.sort(Comparator.comparingLong(ChatMessage::getTimestamp));
-        return messageList;
+        List<Object> messages = chatMessageList.range(key, 0, -1);
+        if (messages == null) {
+            return new ArrayList<>();
+        }
+        // Object 리스트를 ChatMessage 리스트로 변환
+        List<ChatMessage> chatMessages = messages.stream()
+                .map(message -> (ChatMessage) message)
+                .collect(Collectors.toList());
+        // timestamp 순으로 정렬
+        chatMessages.sort(Comparator.comparingLong(ChatMessage::getTimestamp));
+        return chatMessages;
     }
 
     private String generateMessageId(ChatMessage chatMessage) {
