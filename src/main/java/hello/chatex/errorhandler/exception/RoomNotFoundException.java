@@ -1,4 +1,4 @@
-package hello.chatex.errorhandler;
+package hello.chatex.errorhandler.exception;
 
 /**
  * <br>package name   : hello.chatex.errorhandler
