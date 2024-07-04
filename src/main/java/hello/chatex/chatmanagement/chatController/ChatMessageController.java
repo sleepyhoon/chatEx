@@ -1,12 +1,12 @@
-package hello.chatex.chatController;
+package hello.chatex.chatmanagement.chatController;
 
-import hello.chatex.chatDto.ChatMessage;
-import hello.chatex.dao.ChatMessageRepository;
+import hello.chatex.chatmanagement.chatDto.ChatMessage;
 import hello.chatex.pubsub.RedisPublisher;
-import hello.chatex.service.ChatMessageService;
-import hello.chatex.service.ChatRoomService;
+import hello.chatex.chatmanagement.service.ChatMessageService;
+import hello.chatex.chatmanagement.service.ChatRoomService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -59,7 +59,8 @@ public class ChatMessageController {
         }
         // 기존 유저가 입장하는 경우(Join), 아무것도 출력하지않음.
         // Websocket에 발행된 메세지를 redis로 발행한다.
-        redisPublisher.publish(chatRoomService.getTopic(chatMessage.getRoomId()),chatMessage);
+        ChannelTopic topic = chatRoomService.getTopic(chatMessage.getRoomId());
+        redisPublisher.publish(topic, chatMessage);
     }
 
     /**

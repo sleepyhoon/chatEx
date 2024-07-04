@@ -1,4 +1,4 @@
-package hello.chatex.chatDto;
+package hello.chatex.chatmanagement.chatDto;
 
 import lombok.Getter;
 import lombok.Setter;
