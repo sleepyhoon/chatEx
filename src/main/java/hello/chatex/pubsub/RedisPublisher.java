@@ -1,7 +1,9 @@
 package hello.chatex.pubsub;
 
-import hello.chatex.chatDto.ChatMessage;
+import hello.chatex.chatmanagement.chatDto.ChatMessage;
+import hello.chatex.errorhandler.exception.TopicNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.stereotype.Service;
@@ -29,10 +31,18 @@ import org.springframework.stereotype.Service;
  */
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class RedisPublisher {
     private final RedisTemplate<String, Object> redisTemplate;
 
     public void publish(ChannelTopic topic, ChatMessage message) {
-        redisTemplate.convertAndSend(topic.getTopic(), message);
+        try {
+            if (topic == null) {
+                throw new TopicNotFoundException("Topic cannot be null");
+            }
+            redisTemplate.convertAndSend(topic.getTopic(), message);
+        } catch (TopicNotFoundException e) {
+            log.error("Failed to publish message: {}", e.getMessage());
+        }
     }
 }
