@@ -1,10 +1,13 @@
-package hello.chatex.service;
+package hello.chatex.chatmanagement.service;
 
-import org.springframework.data.redis.listener.ChannelTopic;
+import hello.chatex.chatmanagement.chatDto.ChatMessage;
+import hello.chatex.usermanagement.domain.User;
+
+import java.util.List;
 
 /**
  * <br>package name   : hello.chatex.service
- * <br>file name      : ChatRoomService
+ * <br>file name      : ChatMessageService
  * <br>date           : 2024-07-01
  * <pre>
  * <span style="color: white;">[description]</span>
@@ -23,7 +26,7 @@ import org.springframework.data.redis.listener.ChannelTopic;
  * 2024-07-01        SeungHoon              init create
  * </pre>
  */
-public interface ChatRoomService {
-    void enterChatRoom(String roomId);
-    ChannelTopic getTopic(String roomId);
+public interface ChatMessageService {
+    void saveChatMessage(ChatMessage chatMessage);
+    List<ChatMessage> getChatMessages(String roomId);
 }

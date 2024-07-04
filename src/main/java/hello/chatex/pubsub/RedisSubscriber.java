@@ -1,7 +1,7 @@
 package hello.chatex.pubsub;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import hello.chatex.chatDto.ChatMessage;
+import hello.chatex.chatmanagement.chatDto.ChatMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.connection.Message;
@@ -49,6 +49,8 @@ public class RedisSubscriber implements MessageListener {
             String publishMessage = (String) redisTemplate.getStringSerializer().deserialize(message.getBody());
             // ChatMessage 객체로 매핑
             ChatMessage roomMessage = objectMapper.readValue(publishMessage, ChatMessage.class);
+            log.info("Redis Subscribe Channel : {}", roomMessage.getRoomId());
+            log.info("Redis SUB Message : {}", publishMessage);
             // Websocket 구독자들에게 채팅 메세지 send
             messagingTemplate.convertAndSend("/sub/chat/room/"+roomMessage.getRoomId(),roomMessage);
         } catch (Exception e) {

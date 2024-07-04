@@ -1,6 +1,9 @@
-package hello.chatex.service;
+package hello.chatex.chatmanagement.service;
 
+import hello.chatex.chatmanagement.dao.ChatRoomRepository;
 import hello.chatex.pubsub.RedisSubscriber;
+import hello.chatex.usermanagement.dao.UserRepository;
+import hello.chatex.usermanagement.domain.User;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.listener.ChannelTopic;
@@ -8,6 +11,7 @@ import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**

@@ -1,13 +1,16 @@
-package hello.chatex.dao;
+package hello.chatex.chatmanagement.dao;
 
-import hello.chatex.chatDto.ChatRoom;
+import hello.chatex.chatmanagement.chatDto.ChatRoom;
+import hello.chatex.usermanagement.domain.User;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.HashOperations;
+import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static hello.chatex.constants.Const.CHAT_ROOMS;
 

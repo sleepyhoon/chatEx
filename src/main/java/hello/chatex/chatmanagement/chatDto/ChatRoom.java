@@ -1,13 +1,11 @@
-package hello.chatex.chatDto;
+package hello.chatex.chatmanagement.chatDto;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * <br>package name   : hello.chatex.chatDto

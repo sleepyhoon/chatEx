@@ -1,7 +1,8 @@
-package hello.chatex.service;
+package hello.chatex.chatmanagement.service;
 
-import hello.chatex.chatDto.ChatMessage;
-import hello.chatex.dao.ChatMessageRepository;
+import hello.chatex.chatmanagement.chatDto.ChatMessage;
+import hello.chatex.chatmanagement.dao.ChatMessageRepository;
+import hello.chatex.usermanagement.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
