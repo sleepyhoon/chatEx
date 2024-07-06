@@ -1,6 +1,7 @@
 package hello.chatex.chatmanagement.chatlog;
 
 import hello.chatex.chatmanagement.chatDto.ChatMessage;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -11,6 +12,8 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import static hello.chatex.chatmanagement.chatlog.ChatLogUtil.formatChatMessage;
+import static hello.chatex.chatmanagement.chatlog.ChatLogUtil.getCurrentDate;
 import static hello.chatex.constants.Const.LOG_DIRECTORY;
 
 /**
@@ -40,22 +43,16 @@ import static hello.chatex.constants.Const.LOG_DIRECTORY;
 public class ChatLogManager {
 
     /**
-     * log를 저장하는 디렉토리가 없으면 생성한다.
+     * local에 존재하는 chat_logs directory에 log를 저장한다.
+     * @param message
+     * @throws IOException
      */
-    public ChatLogManager() {
+    public synchronized void saveChatMessage(ChatMessage message) throws IOException {
         File dir = new File(LOG_DIRECTORY);
         if (!dir.exists()) {
             log.info("Create directory: {}", LOG_DIRECTORY);
             dir.mkdirs();
         }
-    }
-
-    /**
-     * local에 존재하는 chat_logs directory에 log를 저장한다.
-     * @param message
-     * @throws IOException
-     */
-    public static synchronized void saveChatMessage(ChatMessage message) throws IOException {
         String fileName = LOG_DIRECTORY + getCurrentDate() + "_chatLog.txt";
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName, true))) {
             writer.write(formatChatMessage(message));
@@ -63,22 +60,5 @@ public class ChatLogManager {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    /**
-     * ChatMessage를 log 형식에 맞게 재구성한다.
-     * @param message
-     * @return [DATE and Time] User (Chat_Type): ChatMessage (Room ID: ~~)
-     */
-    private static String formatChatMessage(ChatMessage message) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String timestamp = sdf.format(new Date(message.getTimestamp()));
-        return String.format("[%s] %s (%s): %s (Room ID: %s)",
-                timestamp, message.getSender(), message.getType(), message.getMessage(), message.getRoomId());
-    }
-
-    private static String getCurrentDate() {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        return sdf.format(new Date());
     }
 }
