@@ -41,24 +41,28 @@ import static hello.chatex.constants.Const.LOG_DIRECTORY;
 @Component
 @Slf4j
 public class ChatLogManager {
-
+    
     /**
      * local에 존재하는 chat_logs directory에 log를 저장한다.
      * @param message
      * @throws IOException
      */
     public synchronized void saveChatMessage(ChatMessage message) throws IOException {
-        File dir = new File(LOG_DIRECTORY);
-        if (!dir.exists()) {
-            log.info("Create directory: {}", LOG_DIRECTORY);
-            dir.mkdirs();
-        }
+        ensureLogDirectoryExists();
         String fileName = LOG_DIRECTORY + getCurrentDate() + "_chatLog.txt";
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName, true))) {
             writer.write(formatChatMessage(message));
             writer.newLine();
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private static void ensureLogDirectoryExists() {
+        File dir = new File(LOG_DIRECTORY);
+        if (!dir.exists()) {
+            log.info("Create directory: {}", LOG_DIRECTORY);
+            dir.mkdirs();
         }
     }
 }
