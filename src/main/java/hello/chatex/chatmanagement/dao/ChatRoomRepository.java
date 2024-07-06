@@ -61,7 +61,6 @@ public class ChatRoomRepository {
         ChatRoom room = ChatRoom.builder()
                 .name(name)
                 .roomId(UUID.randomUUID().toString())
-                .messages(new ArrayList<>())
                 .build();
         //redis에 저장하기.
         opsHashChatRoom.put(CHAT_ROOMS, room.getRoomId() , room);

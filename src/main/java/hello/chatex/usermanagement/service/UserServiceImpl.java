@@ -3,6 +3,8 @@ package hello.chatex.usermanagement.service;
 import hello.chatex.usermanagement.dao.UserRepository;
 import hello.chatex.usermanagement.domain.User;
 import hello.chatex.usermanagement.domain.UserDto;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,15 +45,20 @@ public class UserServiceImpl implements UserService {
      * @return 같은 채팅방 내에서는 중복 이름이 불가능하지만, 다른 채팅방 내에서는 중복 이름이 가능함.
      */
     @Override
+    @Transactional
     public User createUser(UserDto userDto) {
-        return userRepository.findByNameAndRoomId(userDto.getName(), userDto.getRoomId())
-                .orElseGet(() -> {
-                    User user = User.builder()
-                            .name(userDto.getName())
-                            .roomId(userDto.getRoomId())
-                            .build();
-                    return userRepository.save(user);
-                });
+        try {
+            return userRepository.findByNameAndRoomId(userDto.getName(), userDto.getRoomId())
+                    .orElseGet(() -> {
+                        User user = User.builder()
+                                .name(userDto.getName())
+                                .roomId(userDto.getRoomId())
+                                .build();
+                        return userRepository.save(user);
+                    });
+        } catch (DataIntegrityViolationException e) {
+            throw new RuntimeException("중복된 사용자: " + userDto.getName() + " in room " + userDto.getRoomId(), e);
+        }
     }
 
     /**

@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -46,12 +47,22 @@ public class ChatMessageRepository {
         chatMessageList = redisTemplate.opsForList();
     }
 
+    /**
+     * 채팅 로그를 redis에 3일 동안 저장한다. 기간은 수정 가능하다.
+     * @param chatMessage
+     */
     public void saveMessage(ChatMessage chatMessage) {
         // roomId를 기반으로 메시지를 고유하게 저장
         String key = "CHAT_ROOM_" + chatMessage.getRoomId();
         chatMessageList.rightPush(key,chatMessage);
+        redisTemplate.expire(key,3, TimeUnit.DAYS);
     }
 
+    /**
+     *
+     * @param roomId
+     * @return 해당 채팅방 id인 채팅 메시지를 가져온다.
+     */
     public List<ChatMessage> getMessagesFromChatRoom(String roomId) {
         // roomId를 기반으로 해당 채팅방의 모든 메시지를 조회
         String key = "CHAT_ROOM_" + roomId;
@@ -66,10 +77,5 @@ public class ChatMessageRepository {
         // timestamp 순으로 정렬
         chatMessages.sort(Comparator.comparingLong(ChatMessage::getTimestamp));
         return chatMessages;
-    }
-
-    private String generateMessageId(ChatMessage chatMessage) {
-        // 메시지 고유 ID 생성 로직 (예: 타임스탬프와 송신자를 조합하여 생성)
-        return chatMessage.getSender() + "_" + System.currentTimeMillis();
     }
 }

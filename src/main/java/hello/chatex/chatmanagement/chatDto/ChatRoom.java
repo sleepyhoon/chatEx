@@ -37,7 +37,4 @@ public class ChatRoom implements Serializable {
 
     private String roomId;
     private String name;
-
-    // 채팅 메시지 리스트 추가
-    private ArrayList<ChatMessage> messages;
 }
