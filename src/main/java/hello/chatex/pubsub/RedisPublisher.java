@@ -14,12 +14,12 @@ import org.springframework.stereotype.Service;
  * <br>date           : 2024-06-28
  * <pre>
  * <span style="color: white;">[description]</span>
- *
+ * 해당 토픽을 가진 채팅방에 메세지를 발행한다. 해당 코드가 실행되면 자동으로 RedisSubscriber의 onMessage() 메서드가 실행된다. 전달 받은 topic이 null 이면 예외를 발생시킨다.
  * </pre>
  * <pre>
  * <span style="color: white;">usage:</span>
  * {@code
- *
+ * public void publish(ChannelTopic topic, ChatMessage message)
  * } </pre>
  * <pre>
  * modified log :

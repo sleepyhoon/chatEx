@@ -15,12 +15,13 @@ import java.util.List;
  * <br>date           : 2024-07-01
  * <pre>
  * <span style="color: white;">[description]</span>
- *
+ * 채팅 메세지를 저장하거나, 조회할 수 있다.
  * </pre>
  * <pre>
  * <span style="color: white;">usage:</span>
  * {@code
- *
+ * public void saveChatMessage(ChatMessage chatMessage)
+ * public List<ChatMessage> getChatMessages(String roomId)
  * } </pre>
  * <pre>
  * modified log :

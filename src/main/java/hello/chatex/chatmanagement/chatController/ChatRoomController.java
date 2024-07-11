@@ -19,12 +19,17 @@ import java.util.List;
  * <br>date           : 2024-06-26
  * <pre>
  * <span style="color: white;">[description]</span>
- *
+ * 클라이언트가 직접적으로 보내는 요청을 처리한다.
  * </pre>
  * <pre>
  * <span style="color: white;">usage:</span>
  * {@code
- *
+ * public String rooms(Model model)
+ * public List<ChatRoom> room()
+ * public ChatRoom createRoom(@RequestParam String name)
+ * public String roomDetail(@PathVariable String roomId, Model model)
+ * public ChatRoom roomInfo(@PathVariable String roomId)
+ * public List<User> getUsersInRoom(@PathVariable String roomId)
  * } </pre>
  * <pre>
  * modified log :

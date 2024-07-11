@@ -14,12 +14,13 @@ import java.util.regex.Matcher;
  * <br>date           : 2024-07-06
  * <pre>
  * <span style="color: white;">[description]</span>
- *
+ * 채팅 메세지를 채팅 로그 형식에 맞게 재구성한다.
  * </pre>
  * <pre>
  * <span style="color: white;">usage:</span>
  * {@code
- *
+ * public static String formatChatMessage(ChatMessage message)
+ * public static String getCurrentDate()
  * } </pre>
  * <pre>
  * modified log :
@@ -32,8 +33,6 @@ import java.util.regex.Matcher;
 @Component
 public class ChatLogUtil {
     /**
-     * ChatMessage를 log 형식에 맞게 재구성한다.
-     *
      * @param message
      * @return [DATE and Time] User (Chat_Type): ChatMessage (Room ID: ~~)
      */

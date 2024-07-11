@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,12 +24,13 @@ import java.util.List;
  * <br>date           : 2024-06-26
  * <pre>
  * <span style="color: white;">[description]</span>
- *
+ * ChatMessage에 관련된 url을 처리하는 controller 이다. websocket "/pub/chat/message"로 들어오는 메세지를 처리하거나, 특정 채팅방에 있는 모든 유저들을 반환한다.
  * </pre>
  * <pre>
  * <span style="color: white;">usage:</span>
  * {@code
- *
+ * public void message(ChatMessage chatMessage) throws IOException
+ * public List<ChatMessage> getMessages(@PathVariable String roomId)
  * } </pre>
  * <pre>
  * modified log :
@@ -50,7 +52,7 @@ public class ChatMessageController {
      * websocket "/pub/chat/message"로 들어오는 메세지를 처리한다.
      */
     @MessageMapping("/chat/message")
-    public void message(ChatMessage chatMessage) throws IOException {
+    public void message(@Payload ChatMessage chatMessage) throws IOException {
         // 처음 입장 했을 경우(Enter)
         if(ChatMessage.MessageType.ENTER.equals(chatMessage.getType())) {
             chatRoomService.enterChatRoom(chatMessage.getRoomId());

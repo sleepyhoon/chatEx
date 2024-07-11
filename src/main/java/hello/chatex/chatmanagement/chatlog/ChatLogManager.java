@@ -23,6 +23,7 @@ import static hello.chatex.constants.Const.LOG_DIRECTORY;
  * <pre>
  * <span style="color: white;">[description]</span>
  * 채팅 로그를 작성을 관리하는 Manager class
+ * 채팅 로그를 로컬에 지정한 directoru에 만든다. 없으면 만든다.
  * </pre>
  * <pre>
  * <span style="color: white;">usage:</span>
