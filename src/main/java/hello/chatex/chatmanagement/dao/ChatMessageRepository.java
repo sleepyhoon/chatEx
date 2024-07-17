@@ -46,14 +46,12 @@ public class ChatMessageRepository {
     }
 
     /**
-     * 채팅 로그를 redis에 3일 동안 저장한다. 기간은 수정 가능하다.
      * @param chatMessage
      */
     public void saveMessage(ChatMessage chatMessage) {
         // roomId를 기반으로 메시지를 고유하게 저장
         String key = "CHAT_ROOM_" + chatMessage.getRoomId();
         chatMessageList.rightPush(key,chatMessage);
-        redisTemplate.expire(key,3, TimeUnit.DAYS);
     }
 
     /**

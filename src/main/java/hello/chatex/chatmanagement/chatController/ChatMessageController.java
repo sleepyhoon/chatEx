@@ -2,6 +2,8 @@ package hello.chatex.chatmanagement.chatController;
 
 import hello.chatex.chatmanagement.chatDto.ChatMessage;
 import hello.chatex.chatmanagement.chatlog.ChatLogManager;
+import hello.chatex.minio.MinioRepository;
+import hello.chatex.minio.MinioService;
 import hello.chatex.pubsub.RedisPublisher;
 import hello.chatex.chatmanagement.service.ChatMessageService;
 import hello.chatex.chatmanagement.service.ChatRoomService;
@@ -46,6 +48,7 @@ public class ChatMessageController {
     private final ChatRoomService chatRoomService;
     private final ChatMessageService chatMessageService;
     private final ChatLogManager chatLogManager;
+    private final MinioService minioService;
     /**
      * websocket "/pub/chat/message"로 들어오는 메세지를 처리한다.
      */
@@ -56,9 +59,10 @@ public class ChatMessageController {
             chatRoomService.enterChatRoom(chatMessage.getRoomId());
             chatMessage.setMessage(chatMessage.getSender()+"님이 입장하셨습니다.");
         }
-        // 채팅을 입력하는 경우 메세지를 redis에 저장해야함.
+        // 채팅을 입력하는 경우 메세지를 redis,minIO,local에 저장해야함.
         if(ChatMessage.MessageType.TALK.equals(chatMessage.getType())) {
             chatMessageService.saveChatMessage(chatMessage);
+            minioService.save(chatMessage);
             chatLogManager.saveChatMessage(chatMessage);
         }
         // 기존 유저가 입장하는 경우(Join), 아무것도 출력하지않음.
