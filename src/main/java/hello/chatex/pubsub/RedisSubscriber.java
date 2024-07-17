@@ -2,6 +2,7 @@ package hello.chatex.pubsub;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hello.chatex.chatmanagement.chatDto.ChatMessage;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.connection.Message;
@@ -16,12 +17,13 @@ import org.springframework.stereotype.Service;
  * <br>date           : 2024-06-28
  * <pre>
  * <span style="color: white;">[description]</span>
- *
+ * RedisPublisher가 메세지를 발행하면 자동으로 onMessage() 메서드가 실행된다. 전달 받은 메세지를 채팅방으로 전달한다.
  * </pre>
  * <pre>
  * <span style="color: white;">usage:</span>
  * {@code
- *
+ * public void onMessage(Message message, byte[] pattern) : 발행한 메세지를 전달받는다. pattern은 사용하지 않았다.
+ * public void convertAndSend(D destination, Object payload) : destination(ChatRoom)으로 payload를 message로 변환 후 전달.
  * } </pre>
  * <pre>
  * modified log :
@@ -43,7 +45,7 @@ public class RedisSubscriber implements MessageListener {
      * redis에서 메세지가 발행되면 대기 하고 있던 onMessage()가 데이터를 처리한다.
      */
     @Override
-    public void onMessage(Message message, byte[] pattern) {
+    public void onMessage(@NonNull Message message, byte[] pattern) {
         try {
             // redis에서 발행된 메세지를 받아 역직렬화
             String publishMessage = (String) redisTemplate.getStringSerializer().deserialize(message.getBody());

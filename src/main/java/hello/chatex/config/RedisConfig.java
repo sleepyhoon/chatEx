@@ -29,12 +29,14 @@ import java.time.Duration;
  * <br>date           : 2024-06-28
  * <pre>
  * <span style="color: white;">[description]</span>
- *
+ * Redis를 사용하기 위한 Configuration 파일.
  * </pre>
  * <pre>
  * <span style="color: white;">usage:</span>
  * {@code
- *
+ * public RedisMessageListenerContainer redisMessageListener(RedisConnectionFactory connectionFactory)
+ * public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory)
+ * public RedisConnectionFactory redisConnectionFactory()
  * } </pre>
  * <pre>
  * modified log :
