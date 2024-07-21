@@ -91,9 +91,4 @@ public class ChatRoomController {
     public Set<UserDto> getUsersInRoom(@PathVariable String roomId) {
         return userService.getUsers(roomId);
     }
-
-    @DeleteMapping("/room/{roomId}")
-    public void deleteChatRoom(@PathVariable String roomId) {
-        chatRoomService.deleteChatRoom(roomId);
-    }
 }
