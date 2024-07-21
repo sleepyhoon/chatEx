@@ -83,19 +83,13 @@ public class ChatRoomServiceImpl implements ChatRoomService{
         }
     }
 
-    // redis에서 먼저 탐색하고 없으면 DB에서 색출한다.
+    /**
+     * 채팅방은 redis에 저장하지 않게 하였움.
+     */
     @Override
     public List<ChatRoom> getChatRooms() {
-        // redis에서 조회.
-        List<ChatRoom> rooms = chatRoomRepository.findAllRoom();
-        if(rooms.isEmpty()) {
-            // minio에서 탐색해야한다. 그리고 redis에 저장한다.
-            rooms = minioRepository.getChatRooms(bucketName);
-            for(ChatRoom room : rooms) {
-                opsHashChatRoom.put(CHAT_ROOMS, room.getRoomId() , room);
-            }
-        }
-        return rooms;
+        // minio에서 탐색해야한다. 그리고 redis에 저장한다.
+        return minioRepository.getChatRooms(bucketName);
     }
 
     public ChannelTopic getTopic(String roomId) {

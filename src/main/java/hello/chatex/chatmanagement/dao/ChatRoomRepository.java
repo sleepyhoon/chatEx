@@ -7,6 +7,7 @@ import hello.chatex.usermanagement.domain.User;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -68,14 +69,14 @@ public class ChatRoomRepository {
         ChatRoom room = ChatRoom.builder()
                 .name(name)
                 .roomId(UUID.randomUUID().toString())
+                .users(new HashSet<>())
                 .build();
         MinioSaveChatDto dto = MinioSaveChatDto.builder()
                 .bucketName(bucketName)
-                .fileName("chat/"+"ChatRoom_"+room.getRoomId())
+                .fileName("chat/"+"ChatRoom/"+room.getRoomId())
                 .fileExtension("json")
                 .build();
         minioRepository.uploadFile(room,dto);
-        // opsHashChatRoom.put(CHAT_ROOMS, room.getRoomId() , room);
         return room;
     }
 }

@@ -1,11 +1,14 @@
 package hello.chatex.chatmanagement.chatDto;
 
+import hello.chatex.usermanagement.domain.User;
+import hello.chatex.usermanagement.domain.UserDto;
 import lombok.Builder;
 import lombok.Getter;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Set;
 
 /**
  * <br>package name   : hello.chatex.chatDto
@@ -37,4 +40,6 @@ public class ChatRoom implements Serializable {
 
     private String roomId;
     private String name;
+
+    private Set<UserDto> users;
 }

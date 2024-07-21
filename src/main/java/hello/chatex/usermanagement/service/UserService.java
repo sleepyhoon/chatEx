@@ -4,6 +4,7 @@ import hello.chatex.usermanagement.domain.User;
 import hello.chatex.usermanagement.domain.UserDto;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * <br>package name   : hello.chatex.usermanagement.service
@@ -28,5 +29,6 @@ import java.util.List;
  */
 public interface UserService {
     User createUser(UserDto userDto);
-    List<User> getUsersInRoom(String roomId);
+    void addUser(String roomId, UserDto userDto);
+    Set<UserDto> getUsers(String roomId);
 }

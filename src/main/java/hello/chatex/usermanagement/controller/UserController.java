@@ -1,5 +1,6 @@
 package hello.chatex.usermanagement.controller;
 
+import hello.chatex.usermanagement.dao.UserRepository;
 import hello.chatex.usermanagement.domain.User;
 import hello.chatex.usermanagement.domain.UserDto;
 import hello.chatex.usermanagement.service.UserService;

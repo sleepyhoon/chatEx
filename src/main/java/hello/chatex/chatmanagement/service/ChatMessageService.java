@@ -27,7 +27,7 @@ import java.util.List;
  * </pre>
  */
 public interface ChatMessageService {
-    void saveInMinio(ChatMessage chatMessage);
+    void saveMessageInMinio(ChatMessage chatMessage);
     void saveInRedis(ChatMessage chatMessage);
     List<ChatMessage> getChatMessages(String roomId);
 }

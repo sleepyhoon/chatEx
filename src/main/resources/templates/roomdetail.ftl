@@ -57,14 +57,6 @@
             <strong>{{ msg.sender }}</strong>: {{ msg.message }}
         </li>
     </ul>
-    <div>
-        <h3>현재 유저 목록</h3>
-        <ul class="list-group user-list">
-            <li class="list-group-item" v-for="user in users" :key="user.id">
-                {{ user.name }}
-            </li>
-        </ul>
-    </div>
 </div>
 <script src="/webjars/vue/2.5.16/dist/vue.min.js"></script>
 <script src="/webjars/axios/0.17.1/dist/axios.min.js"></script>
@@ -82,7 +74,6 @@
             sender: '',
             message: '',
             messages: [],
-            users: [] // 유저 목록 유지
         },
         created() {
             this.roomId = localStorage.getItem('chat.roomId');
@@ -123,17 +114,6 @@
                     this.messages = response.data.reverse();
                 });
             },
-            loadUsers: function () {
-                axios.get('/chat/room/' + this.roomId + '/users').then(response => {
-                    this.users = response.data;
-                    // 유저들의 name을 콘솔에 출력
-                    this.users.forEach(user => {
-                        console.log("username:"+ user.name);
-                    });
-                }).catch(error => {
-                    console.error('Error loading users:', error); // 에러 발생 시 에러 메시지 출력
-                });
-            }
         }
     });
 

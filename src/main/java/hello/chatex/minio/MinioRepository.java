@@ -101,12 +101,11 @@ public class MinioRepository {
             Iterable<Result<Item>> results = minioClient.listObjects(
                     ListObjectsArgs.builder()
                             .bucket(bucketName)
-                            .prefix("chat/ChatRoom_"+ roomId + "/")
+                            .prefix("chat/Chatting/ChatRoom_"+ roomId + "/")
                             .build());
 
             for (Result<Item> result : results) {
                 Item item = result.get();
-                System.out.println("Found item: " + item.objectName());
                 try (InputStream stream = minioClient.getObject(
                         GetObjectArgs.builder()
                                 .bucket(bucketName)
@@ -134,7 +133,7 @@ public class MinioRepository {
             Iterable<Result<Item>> results = minioClient.listObjects(
                     ListObjectsArgs.builder()
                             .bucket(bucketName)
-                            .prefix("chat/ChatRoom_")
+                            .prefix("chat/ChatRoom/")
                             .build());
 
             for (Result<Item> result : results) {
@@ -152,5 +151,17 @@ public class MinioRepository {
             throw new RuntimeException("Error occurred while fetching chat rooms: " + e.getMessage());
         }
         return chatRooms;
+    }
+
+    public void deleteChatRoom(String bucketName, String roomId) {
+        try {
+            minioClient.removeObject(
+                    RemoveObjectArgs.builder()
+                            .bucket(bucketName)
+                            .object("chat/ChatRoom_/" + roomId + ".json")
+                            .build());
+        } catch (Exception e) {
+            throw new RuntimeException("Error occurred while deleting chat room: " + e.getMessage());
+        }
     }
 }

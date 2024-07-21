@@ -6,15 +6,13 @@ import hello.chatex.minio.MinioSaveChatDto;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -59,11 +57,11 @@ public class ChatMessageServiceImpl implements ChatMessageService {
     private String bucketName;
 
     @Override
-    public void saveInMinio(ChatMessage chatMessage) {
+    public void saveMessageInMinio(ChatMessage chatMessage) {
         String uniqueName = "chatting_" + chatMessage.getTimestamp();
         MinioSaveChatDto dto = MinioSaveChatDto.builder()
                 .bucketName(bucketName)
-                .fileName("chat/"+"ChatRoom_"+chatMessage.getRoomId()+"/"+uniqueName)
+                .fileName("chat/"+"/Chatting/ChatRoom_"+chatMessage.getRoomId()+"/"+uniqueName)
                 .fileExtension("json")
                 .build();
         minioRepository.uploadFile(chatMessage,dto);
@@ -77,12 +75,19 @@ public class ChatMessageServiceImpl implements ChatMessageService {
         chatMessageList.rightPush(key,chatMessage);
     }
 
+    /**
+     * 캐시와 DB를 동기화해서 가져오는 것이 필요함. 그래서 동기화하는 과정을 추가했음.
+     * @param roomId
+     * @return
+     */
+
     @Override
     @Transactional(readOnly = true)
     public List<ChatMessage> getChatMessages(String roomId) {
         // redis에서 roomId를 기반으로 해당 채팅방의 모든 메시지를 조회
         String key = "CHAT_ROOM_" + roomId;
         List<Object> messages = chatMessageList.range(key, 0, -1);
+
         List<ChatMessage> chatMessages;
         if (messages == null || messages.isEmpty()) {
             // redis에 없다면 minio DB에서 가져와야 한다. 그리고 redis에 저장한다.
@@ -100,6 +105,19 @@ public class ChatMessageServiceImpl implements ChatMessageService {
             chatMessages = messages.stream()
                     .map(message -> (ChatMessage) message)
                     .collect(Collectors.toList());
+
+            // Minio에서 최신 데이터를 가져옴
+            List<ChatMessage> dbMessages = minioRepository.getChatMessages(bucketName, roomId);
+
+            // 최신 데이터를 비교하여 동기화
+            if (!dbMessages.equals(chatMessages)) {
+                // Minio 데이터를 기준으로 Redis를 동기화
+                redisTemplate.delete(key); // 기존 데이터를 삭제
+                for (ChatMessage dbMessage : dbMessages) {
+                    chatMessageList.rightPush(key, dbMessage);
+                }
+                chatMessages = dbMessages;
+            }
         }
         return chatMessages;
     }

@@ -61,7 +61,7 @@ public class ChatMessageController {
         }
         // 채팅을 입력하는 경우 메세지를 minIO에 저장해야함. redis에는 cache miss 발생하면 저장해야함.
         if(ChatMessage.MessageType.TALK.equals(chatMessage.getType())) {
-            chatMessageService.saveInMinio(chatMessage);
+            chatMessageService.saveMessageInMinio(chatMessage);
             chatLogManager.saveChatMessage(chatMessage);
         }
         // 기존 유저가 입장하는 경우(Join), 아무것도 출력하지않음.
@@ -70,7 +70,7 @@ public class ChatMessageController {
         redisPublisher.publish(topic, chatMessage);
     }
     /**
-     * 특정 채팅방의 모든 메시지를 조회한다.
+     * 특정 채팅방의 모든 메시지를 조회한다. 캐시에서 먼저 검색하고 없으면 DB에서 가져온다.
      */
     @GetMapping("/chat/messages/{roomId}")
     @ResponseBody

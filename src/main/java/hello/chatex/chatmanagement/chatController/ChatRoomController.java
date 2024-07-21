@@ -5,13 +5,16 @@ import hello.chatex.chatmanagement.dao.ChatRoomRepository;
 import hello.chatex.chatmanagement.service.ChatMessageService;
 import hello.chatex.chatmanagement.service.ChatRoomService;
 import hello.chatex.usermanagement.domain.User;
+import hello.chatex.usermanagement.domain.UserDto;
 import hello.chatex.usermanagement.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * <br>package name   : hello.chatex.chatController
@@ -85,7 +88,12 @@ public class ChatRoomController {
     // 특정 채팅방에 있는 유저들 조회
     @GetMapping("/room/{roomId}/users")
     @ResponseBody
-    public List<User> getUsersInRoom(@PathVariable String roomId) {
-        return userService.getUsersInRoom(roomId);
+    public Set<UserDto> getUsersInRoom(@PathVariable String roomId) {
+        return userService.getUsers(roomId);
+    }
+
+    @DeleteMapping("/room/{roomId}")
+    public void deleteChatRoom(@PathVariable String roomId) {
+        chatRoomService.deleteChatRoom(roomId);
     }
 }

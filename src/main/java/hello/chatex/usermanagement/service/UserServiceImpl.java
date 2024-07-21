@@ -1,5 +1,7 @@
 package hello.chatex.usermanagement.service;
 
+import hello.chatex.chatmanagement.chatDto.ChatRoom;
+import hello.chatex.chatmanagement.dao.ChatRoomRepository;
 import hello.chatex.usermanagement.dao.UserRepository;
 import hello.chatex.usermanagement.domain.User;
 import hello.chatex.usermanagement.domain.UserDto;
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * <br>package name   : hello.chatex.usermanagement.service
@@ -38,7 +41,7 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-
+    private final ChatRoomRepository chatRoomRepository;
     /**
      *
      * @param userDto
@@ -61,13 +64,12 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    /**
-     *
-     * @param roomId
-     * @return 채팅방에 위치한 유저들 조회
-     */
     @Override
-    public List<User> getUsersInRoom(String roomId) {
-        return userRepository.findUsersByRoomId(roomId);
+    public void addUser(String roomId, UserDto userDto) {
+    }
+
+    @Override
+    public Set<UserDto> getUsers(String roomId) {
+        return Set.of();
     }
 }
