@@ -86,18 +86,4 @@ public class RedisConfig {
                 .cacheDefaults(config)
                 .build();
     }
-
-    @Bean
-    public KeyGenerator keyGenerator() {
-        return (target, method, params) -> {
-            StringBuilder sb = new StringBuilder();
-            sb.append(target.getClass().getSimpleName());
-            sb.append(".");
-            sb.append(method.getName());
-            for (Object param : params) {
-                sb.append(param.toString());
-            }
-            return sb.toString();
-        };
-    }
 }

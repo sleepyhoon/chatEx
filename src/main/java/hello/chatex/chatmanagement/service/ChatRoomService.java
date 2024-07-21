@@ -1,5 +1,6 @@
 package hello.chatex.chatmanagement.service;
 
+import hello.chatex.chatmanagement.chatDto.ChatRoom;
 import hello.chatex.usermanagement.domain.User;
 import org.springframework.data.redis.listener.ChannelTopic;
 
@@ -28,5 +29,6 @@ import java.util.List;
  */
 public interface ChatRoomService {
     void enterChatRoom(String roomId);
+    List<ChatRoom> getChatRooms();
     ChannelTopic getTopic(String roomId);
 }

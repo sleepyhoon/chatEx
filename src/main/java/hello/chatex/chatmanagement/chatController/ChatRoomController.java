@@ -44,6 +44,7 @@ import java.util.List;
 @RequestMapping("/chat")
 public class ChatRoomController {
     private final ChatRoomRepository chatRoomRepository;
+    private final ChatRoomService chatRoomService;
 
     private final UserService userService;
     // 채팅방 리스트 화면
@@ -56,7 +57,7 @@ public class ChatRoomController {
     @GetMapping("/rooms")
     @ResponseBody
     public List<ChatRoom> room() {
-        return chatRoomRepository.findAllRoom();
+        return chatRoomService.getChatRooms();
     }
 
     // 채팅방 생성

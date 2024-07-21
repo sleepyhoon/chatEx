@@ -1,11 +1,16 @@
 package hello.chatex.chatmanagement.service;
 
+import hello.chatex.chatmanagement.chatDto.ChatRoom;
 import hello.chatex.chatmanagement.dao.ChatRoomRepository;
+import hello.chatex.minio.MinioRepository;
 import hello.chatex.pubsub.RedisSubscriber;
 import hello.chatex.usermanagement.dao.UserRepository;
 import hello.chatex.usermanagement.domain.User;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.HashOperations;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.stereotype.Service;
@@ -13,6 +18,8 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static hello.chatex.constants.Const.CHAT_ROOMS;
 
 /**
  * <br>package name   : hello.chatex.service
@@ -48,9 +55,19 @@ public class ChatRoomServiceImpl implements ChatRoomService{
     // 구독 처리 서비스
     private final RedisSubscriber redisSubscriber;
 
+    private final MinioRepository minioRepository;
+    private final ChatRoomRepository chatRoomRepository;
+
+    private final RedisTemplate<String,Object> redisTemplate;
+    private HashOperations<String,String,ChatRoom> opsHashChatRoom;
+
+    @Value("${minio.bucketName}")
+    private String bucketName;
+
     @PostConstruct
     public void init() {
         topics = new HashMap<>();
+        opsHashChatRoom = redisTemplate.opsForHash();
     }
 
     /**
@@ -66,7 +83,21 @@ public class ChatRoomServiceImpl implements ChatRoomService{
         }
     }
 
-    // 이 코드는 사실 어디에 위치해야 할지 잘 모르겠음.
+    // redis에서 먼저 탐색하고 없으면 DB에서 색출한다.
+    @Override
+    public List<ChatRoom> getChatRooms() {
+        // redis에서 조회.
+        List<ChatRoom> rooms = chatRoomRepository.findAllRoom();
+        if(rooms.isEmpty()) {
+            // minio에서 탐색해야한다. 그리고 redis에 저장한다.
+            rooms = minioRepository.getChatRooms(bucketName);
+            for(ChatRoom room : rooms) {
+                opsHashChatRoom.put(CHAT_ROOMS, room.getRoomId() , room);
+            }
+        }
+        return rooms;
+    }
+
     public ChannelTopic getTopic(String roomId) {
         return topics.get(roomId);
     }

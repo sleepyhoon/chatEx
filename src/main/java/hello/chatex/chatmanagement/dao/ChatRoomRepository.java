@@ -1,9 +1,12 @@
 package hello.chatex.chatmanagement.dao;
 
 import hello.chatex.chatmanagement.chatDto.ChatRoom;
+import hello.chatex.minio.MinioRepository;
+import hello.chatex.minio.MinioSaveChatDto;
 import hello.chatex.usermanagement.domain.User;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -38,8 +41,12 @@ import static hello.chatex.constants.Const.CHAT_ROOMS;
 @RequiredArgsConstructor
 @Repository
 public class ChatRoomRepository {
+    private final MinioRepository minioRepository;
     private final RedisTemplate<String,Object> redisTemplate;
     private HashOperations<String,String,ChatRoom> opsHashChatRoom;
+
+    @Value("${minio.bucketName}")
+    private String bucketName;
 
     @PostConstruct
     private void init() {
@@ -55,15 +62,20 @@ public class ChatRoomRepository {
     }
 
     /**
-     * 채팅방 생성 : 서버간 채팅의 공유를 위해 redis hash에 저장한다.
+     * 채팅방 생성 : 서버간 채팅의 공유를 위해 minio에 저장한다.
      */
     public ChatRoom createChatRoom(String name) {
         ChatRoom room = ChatRoom.builder()
                 .name(name)
                 .roomId(UUID.randomUUID().toString())
                 .build();
-        //redis에 저장하기.
-        opsHashChatRoom.put(CHAT_ROOMS, room.getRoomId() , room);
+        MinioSaveChatDto dto = MinioSaveChatDto.builder()
+                .bucketName(bucketName)
+                .fileName("chat/"+"ChatRoom_"+room.getRoomId())
+                .fileExtension("json")
+                .build();
+        minioRepository.uploadFile(room,dto);
+        // opsHashChatRoom.put(CHAT_ROOMS, room.getRoomId() , room);
         return room;
     }
 }
