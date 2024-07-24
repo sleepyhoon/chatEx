@@ -17,6 +17,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static hello.chatex.constants.Const.CHAT_ROOM_ORIGIN;
+
 /**
  * <br>package name   : hello.chatex.service
  * <br>file name      : ChatMessageServiceImpl
@@ -85,7 +87,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
     @Transactional(readOnly = true)
     public List<ChatMessage> getChatMessages(String roomId) {
         // redis에서 roomId를 기반으로 해당 채팅방의 모든 메시지를 조회
-        String key = "CHAT_ROOM_" + roomId;
+        String key = CHAT_ROOM_ORIGIN + roomId;
         List<Object> messages = chatMessageList.range(key, 0, -1);
 
         List<ChatMessage> chatMessages;
@@ -94,7 +96,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
             chatMessages = minioRepository.getChatMessages(bucketName, roomId);
             for(ChatMessage chatMessage : chatMessages) {
                 // roomId를 기반으로 메시지를 고유하게 저장
-                key = "CHAT_ROOM_" + chatMessage.getRoomId();
+                key = CHAT_ROOM_ORIGIN + chatMessage.getRoomId();
                 chatMessageList.rightPush(key,chatMessage);
             }
             // timestamp 순으로 정렬
