@@ -4,6 +4,7 @@ import hello.chatex.usermanagement.domain.User;
 import hello.chatex.usermanagement.domain.UserDto;
 import lombok.Builder;
 import lombok.Getter;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -33,10 +34,8 @@ import java.util.Set;
  */
 @Getter
 @Builder
-public class ChatRoom implements Serializable {
-
-    @Serial
-    private static final long serialVersionUID = 123456789L;
+@Document(collection = "chatroom")
+public class ChatRoom {
 
     private String roomId;
     private String name;

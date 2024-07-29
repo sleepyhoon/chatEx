@@ -28,7 +28,7 @@ import java.io.Serializable;
  */
 @Getter
 @Builder
-public class UserChatRoom implements Serializable {
+public class UserChatRoom  {
 
     private Long userId;
     private String chatRoomId;

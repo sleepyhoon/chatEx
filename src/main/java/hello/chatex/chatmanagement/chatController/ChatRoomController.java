@@ -2,18 +2,16 @@ package hello.chatex.chatmanagement.chatController;
 
 import hello.chatex.chatmanagement.chatDto.ChatRoom;
 import hello.chatex.chatmanagement.dao.ChatRoomRepository;
-import hello.chatex.chatmanagement.service.ChatMessageService;
 import hello.chatex.chatmanagement.service.ChatRoomService;
-import hello.chatex.usermanagement.domain.User;
 import hello.chatex.usermanagement.domain.UserDto;
 import hello.chatex.usermanagement.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -50,6 +48,7 @@ public class ChatRoomController {
     private final ChatRoomService chatRoomService;
 
     private final UserService userService;
+
     // 채팅방 리스트 화면
     @GetMapping("/room")
     public String rooms(Model model) {
@@ -80,15 +79,14 @@ public class ChatRoomController {
     // 특정 채팅방 조회
     @GetMapping("/room/{roomId}")
     @ResponseBody
-    public ChatRoom roomInfo(@PathVariable String roomId) {
-        return chatRoomRepository.findRoomById(roomId);
+    public Optional<ChatRoom> roomInfo(@PathVariable String roomId) {
+        return chatRoomRepository.findByRoomId(roomId);
     }
-
 
     // 특정 채팅방에 있는 유저들 조회
     @GetMapping("/room/{roomId}/users")
     @ResponseBody
     public Set<UserDto> getUsersInRoom(@PathVariable String roomId) {
-        return userService.getUsers(roomId);
+        return chatRoomService.getUsers(roomId);
     }
 }

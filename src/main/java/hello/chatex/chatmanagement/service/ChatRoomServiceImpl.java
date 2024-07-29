@@ -2,10 +2,10 @@ package hello.chatex.chatmanagement.service;
 
 import hello.chatex.chatmanagement.chatDto.ChatRoom;
 import hello.chatex.chatmanagement.dao.ChatRoomRepository;
-import hello.chatex.minio.MinioRepository;
 import hello.chatex.pubsub.RedisSubscriber;
 import hello.chatex.usermanagement.dao.UserRepository;
 import hello.chatex.usermanagement.domain.User;
+import hello.chatex.usermanagement.domain.UserDto;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,9 +16,7 @@ import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static hello.chatex.constants.Const.CHAT_ROOMS;
 
@@ -57,11 +55,7 @@ public class ChatRoomServiceImpl implements ChatRoomService{
     // 구독 처리 서비스
     private final RedisSubscriber redisSubscriber;
 
-    private final MinioRepository minioRepository;
     private final ChatRoomRepository chatRoomRepository;
-
-    @Value("${minio.bucketName}")
-    private String bucketName;
 
     @PostConstruct
     public void init() {
@@ -70,7 +64,13 @@ public class ChatRoomServiceImpl implements ChatRoomService{
 
     @Override
     public ChatRoom createChatRoom(String name) {
-        return chatRoomRepository.createChatRoom(name);
+        ChatRoom chatRoom = ChatRoom.builder()
+                .name(name)
+                .roomId(UUID.randomUUID().toString())
+                .users(new HashSet<>())
+                .build();
+        chatRoomRepository.save(chatRoom);
+        return chatRoom;
     }
 
     /**
@@ -87,16 +87,26 @@ public class ChatRoomServiceImpl implements ChatRoomService{
         }
     }
 
-    /**
-     * 채팅방은 redis에 저장하지 않게 하였움.
-     */
     @Override
     public List<ChatRoom> getChatRooms() {
-        // minio에서 탐색해야한다. 그리고 redis에 저장한다.
-        return minioRepository.getChatRooms(bucketName);
+        return chatRoomRepository.findAll();
+    }
+
+    @Override
+    public Optional<ChatRoom> getChatRoom(String roomId) {
+        return Optional.ofNullable(chatRoomRepository.findById(roomId).orElseThrow(
+                () -> new RuntimeException("no chat room found with id: " + roomId)));
     }
 
     public ChannelTopic getTopic(String roomId) {
         return topics.get(roomId);
+    }
+
+    @Override
+    public Set<UserDto> getUsers(String roomId) {
+        ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(
+                () -> new RuntimeException("no chat room found with id: " + roomId)
+        );
+        return chatRoom.getUsers();
     }
 }

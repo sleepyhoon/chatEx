@@ -106,7 +106,7 @@
             },
             loadMessages: function () {
                 axios.get('/chat/messages/' + this.roomId).then(response => {
-                    this.messages = response.data.reverse();
+                    this.messages = response.data;
                 });
             },
         }
@@ -122,8 +122,8 @@
                 type:'ENTER',
                 roomId:vm.$data.roomId,
                 sender:vm.$data.sender,
-                timestamp: Date.now()}
-            ));
+                timestamp: Date.now()
+            }));
         }, function(error) {
             if (reconnect++ <= 5) {
                 setTimeout(function() {

@@ -1,7 +1,9 @@
 package hello.chatex.chatmanagement.chatDto;
 
+import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serializable;
 
@@ -29,14 +31,19 @@ import java.io.Serializable;
  * </pre>
  */
 @Getter
-@Setter
-public class ChatMessage implements Serializable {
+@Document(collection = "chat")
+public class ChatMessage  {
     // 메세지 타입 : 새로 운 유저 입장, 기존의 유저 입장, 채팅
     public enum MessageType {
         ENTER, JOIN, TALK
     }
+
+    @Id
+    private String id;
+
     private MessageType type; // 메세지 타입
 
+    @Setter
     private String message; // 메세지 내용
 
     private String roomId; // 채팅방 id
