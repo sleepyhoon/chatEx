@@ -47,6 +47,9 @@ dependencies {
 
     // minio 설정
     implementation 'io.minio:minio:8.5.11'
+
+    // mongo 설정
+    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
 }
 
 tasks.named('test') {
