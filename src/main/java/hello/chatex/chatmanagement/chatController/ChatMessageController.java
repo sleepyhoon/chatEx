@@ -63,6 +63,9 @@ public class ChatMessageController {
             chatMessageService.saveMessage(chatMessage);
             chatLogManager.saveChatMessage(chatMessage);
         }
+        if(ChatMessage.MessageType.LEAVE.equals(chatMessage.getType())) {
+            chatMessage.setMessage(chatMessage.getSender()+"님이 퇴장하셨습니다.");
+        }
         // 기존 유저가 입장하는 경우(Join), 아무것도 출력하지않음.
         // Websocket에 발행된 메세지를 redis로 발행한다.
         ChannelTopic topic = chatRoomService.getTopic(chatMessage.getRoomId());

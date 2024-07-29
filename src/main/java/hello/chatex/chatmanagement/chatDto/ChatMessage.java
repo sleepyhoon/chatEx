@@ -35,7 +35,7 @@ import java.io.Serializable;
 public class ChatMessage  {
     // 메세지 타입 : 새로 운 유저 입장, 기존의 유저 입장, 채팅
     public enum MessageType {
-        ENTER, JOIN, TALK
+        ENTER, JOIN, TALK, LEAVE
     }
 
     @Id
