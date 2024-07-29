@@ -46,6 +46,7 @@ import static hello.chatex.constants.Const.CHAT_ROOMS;
 @RequiredArgsConstructor
 public class ChatRoomServiceImpl implements ChatRoomService{
 
+    private final UserRepository userRepository;
     // 채팅방의 대화 메세지를 발행하기 위한 redis topic 정보.
     // 서버별로 채팅방에 매치되는 topic 정보를 Map에 넣어서 roomId로 찾을 수 있게 한다.
     private Map<String, ChannelTopic> topics;
@@ -67,7 +68,6 @@ public class ChatRoomServiceImpl implements ChatRoomService{
         ChatRoom chatRoom = ChatRoom.builder()
                 .name(name)
                 .roomId(UUID.randomUUID().toString())
-                .users(new HashSet<>())
                 .build();
         chatRoomRepository.save(chatRoom);
         return chatRoom;
@@ -104,9 +104,6 @@ public class ChatRoomServiceImpl implements ChatRoomService{
 
     @Override
     public Set<UserDto> getUsers(String roomId) {
-        ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(
-                () -> new RuntimeException("no chat room found with id: " + roomId)
-        );
-        return chatRoom.getUsers();
+        return userRepository.findUsersByRoomId(roomId);
     }
 }

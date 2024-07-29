@@ -43,6 +43,14 @@
     <div class="chat-header">
         <h2>{{ room.name }}</h2>
     </div>
+    <div class="user-list">
+        <h4>Users:</h4>
+        <ul class="list-group">
+            <li class="list-group-item" v-for="user in users" :key="user.id">
+                {{ user.name }}
+            </li>
+        </ul>
+    </div>
     <div class="input-group">
         <div class="input-group-prepend">
             <label class="input-group-text">내용</label>
@@ -71,6 +79,7 @@
         data: {
             roomId: '',
             room: {},
+            users: [],
             sender: '',
             message: '',
             messages: [],
@@ -80,11 +89,18 @@
             this.sender = localStorage.getItem('chat.sender');
             this.findRoom();
             this.loadMessages();
+            this.loadUsers();
+            window.addEventListener('beforeunload', this.leaveRoom); // 창 닫기 또는 새로고침 시 LEAVE 메시지 전송
         },
         methods: {
             findRoom: function () {
                 axios.get('/chat/room/' + this.roomId).then(response => {
                     this.room = response.data;
+                });
+            },
+            loadUsers: function () {
+                axios.get('/chat/room/' + this.roomId + '/users').then(response => {
+                    this.users = response.data;
                 });
             },
             sendMessage: function () {
@@ -109,6 +125,14 @@
                     this.messages = response.data;
                 });
             },
+            leaveRoom: function () {
+                stompClient.send("/pub/chat/message", {}, JSON.stringify({
+                    type: 'LEAVE',
+                    roomId: this.roomId,
+                    sender: this.sender,
+                    timestamp: Date.now()
+                }));
+            }
         }
     });
 
