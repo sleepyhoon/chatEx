@@ -28,6 +28,7 @@ import java.util.List;
  * </pre>
  */
 public interface ChatRoomService {
+    ChatRoom createChatRoom(String name);
     void enterChatRoom(String roomId);
     List<ChatRoom> getChatRooms();
     ChannelTopic getTopic(String roomId);

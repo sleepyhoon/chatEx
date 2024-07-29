@@ -51,25 +51,16 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public User createUser(UserDto userDto) {
         try {
-            return userRepository.findByNameAndRoomId(userDto.getName(), userDto.getRoomId())
+            return userRepository.findByNameAndRoomId(userDto.name(), userDto.roomId())
                     .orElseGet(() -> {
                         User user = User.builder()
-                                .name(userDto.getName())
-                                .roomId(userDto.getRoomId())
+                                .name(userDto.name())
+                                .roomId(userDto.roomId())
                                 .build();
                         return userRepository.save(user);
                     });
         } catch (DataIntegrityViolationException e) {
-            throw new RuntimeException("중복된 사용자: " + userDto.getName() + " in room " + userDto.getRoomId(), e);
+            throw new RuntimeException("중복된 사용자: " + userDto.name() + " in room " + userDto.roomId(), e);
         }
-    }
-
-    @Override
-    public void addUser(String roomId, UserDto userDto) {
-    }
-
-    @Override
-    public Set<UserDto> getUsers(String roomId) {
-        return Set.of();
     }
 }

@@ -29,6 +29,4 @@ import java.util.Set;
  */
 public interface UserService {
     User createUser(UserDto userDto);
-    void addUser(String roomId, UserDto userDto);
-    Set<UserDto> getUsers(String roomId);
 }

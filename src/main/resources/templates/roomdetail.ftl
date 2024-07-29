@@ -80,7 +80,6 @@
             this.sender = localStorage.getItem('chat.sender');
             this.findRoom();
             this.loadMessages();
-            this.loadUsers(); // 유저 목록 로드
         },
         methods: {
             findRoom: function () {
@@ -104,10 +103,6 @@
                     "sender": recv.type === 'ENTER' ? '[알림]' : recv.sender,
                     "message": recv.message
                 });
-                // 유저가 입장 또는 퇴장할 때 유저 목록 갱신
-                if (recv.type === 'ENTER') {
-                    this.loadUsers();
-                }
             },
             loadMessages: function () {
                 axios.get('/chat/messages/' + this.roomId).then(response => {
@@ -123,7 +118,12 @@
                 const recv = JSON.parse(message.body);
                 vm.recvMessage(recv);
             });
-            stompClient.send("/pub/chat/message", {}, JSON.stringify({type:'ENTER', roomId:vm.$data.roomId, sender:vm.$data.sender}));
+            stompClient.send("/pub/chat/message", {}, JSON.stringify({
+                type:'ENTER',
+                roomId:vm.$data.roomId,
+                sender:vm.$data.sender,
+                timestamp: Date.now()}
+            ));
         }, function(error) {
             if (reconnect++ <= 5) {
                 setTimeout(function() {

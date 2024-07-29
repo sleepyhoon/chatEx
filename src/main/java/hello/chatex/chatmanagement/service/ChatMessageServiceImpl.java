@@ -84,41 +84,8 @@ public class ChatMessageServiceImpl implements ChatMessageService {
     @Override
     @Transactional(readOnly = true)
     public List<ChatMessage> getChatMessages(String roomId) {
-        // redis에서 roomId를 기반으로 해당 채팅방의 모든 메시지를 조회
-        String key = "CHAT_ROOM_" + roomId;
-        List<Object> messages = chatMessageList.range(key, 0, -1);
-
-        List<ChatMessage> chatMessages;
-        if (messages == null || messages.isEmpty()) {
-            // redis에 없다면 minio DB에서 가져와야 한다. 그리고 redis에 저장한다.
-            chatMessages = minioRepository.getChatMessages(bucketName, roomId);
-            for(ChatMessage chatMessage : chatMessages) {
-                // roomId를 기반으로 메시지를 고유하게 저장
-                key = "CHAT_ROOM_" + chatMessage.getRoomId();
-                chatMessageList.rightPush(key,chatMessage);
-            }
-            // timestamp 순으로 정렬
-            chatMessages.sort(Comparator.comparingLong(ChatMessage::getTimestamp));
-        }
-        else {
-            // Object 리스트를 ChatMessage 리스트로 변환
-            chatMessages = messages.stream()
-                    .map(message -> (ChatMessage) message)
-                    .collect(Collectors.toList());
-
-            // Minio에서 최신 데이터를 가져옴
-            List<ChatMessage> dbMessages = minioRepository.getChatMessages(bucketName, roomId);
-
-            // 최신 데이터를 비교하여 동기화
-            if (!dbMessages.equals(chatMessages)) {
-                // Minio 데이터를 기준으로 Redis를 동기화
-                redisTemplate.delete(key); // 기존 데이터를 삭제
-                for (ChatMessage dbMessage : dbMessages) {
-                    chatMessageList.rightPush(key, dbMessage);
-                }
-                chatMessages = dbMessages;
-            }
-        }
+        List<ChatMessage> chatMessages = minioRepository.getChatMessages(bucketName, roomId);
+        chatMessages.sort(Comparator.comparingLong(ChatMessage::getTimestamp));
         return chatMessages;
     }
 }

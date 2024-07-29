@@ -42,4 +42,8 @@ public class ChatRoom implements Serializable {
     private String name;
 
     private Set<UserDto> users;
+
+    public void addUser(String roomId, UserDto user) {
+        users.add(user);
+    }
 }

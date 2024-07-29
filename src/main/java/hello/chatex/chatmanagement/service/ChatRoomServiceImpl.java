@@ -8,6 +8,7 @@ import hello.chatex.usermanagement.dao.UserRepository;
 import hello.chatex.usermanagement.domain.User;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -42,6 +43,7 @@ import static hello.chatex.constants.Const.CHAT_ROOMS;
  * 2024-07-01        SeungHoon              init create
  * </pre>
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ChatRoomServiceImpl implements ChatRoomService{
@@ -58,16 +60,17 @@ public class ChatRoomServiceImpl implements ChatRoomService{
     private final MinioRepository minioRepository;
     private final ChatRoomRepository chatRoomRepository;
 
-    private final RedisTemplate<String,Object> redisTemplate;
-    private HashOperations<String,String,ChatRoom> opsHashChatRoom;
-
     @Value("${minio.bucketName}")
     private String bucketName;
 
     @PostConstruct
     public void init() {
         topics = new HashMap<>();
-        opsHashChatRoom = redisTemplate.opsForHash();
+    }
+
+    @Override
+    public ChatRoom createChatRoom(String name) {
+        return chatRoomRepository.createChatRoom(name);
     }
 
     /**
@@ -78,6 +81,7 @@ public class ChatRoomServiceImpl implements ChatRoomService{
         ChannelTopic topic = topics.get(roomId);
         if (topic == null) {
             topic = new ChannelTopic(roomId);
+            log.info("topic: {}", topic);
             redisMessageListener.addMessageListener(redisSubscriber,topic);
             topics.put(roomId, topic);
         }

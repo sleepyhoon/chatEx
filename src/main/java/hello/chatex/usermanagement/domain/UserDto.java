@@ -24,9 +24,6 @@ import lombok.Setter;
  * 2024-07-03        SeungHoon              init create
  * </pre>
  */
-@Getter
-@Setter
-public class UserDto {
-    private String name;
-    private String roomId;
+
+public record UserDto (String name, String roomId){
 }
